@@ -1,0 +1,7 @@
+logging:
+  level:
+    spring.validation: debug
+#    org:
+#      apache:
+#        coyote:
+#          http11: debug
