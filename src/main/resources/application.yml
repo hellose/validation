@@ -1,3 +1,7 @@
+spring:
+  messages:
+    basename: messages, errors
+
 logging:
   level:
     spring.validation: debug
