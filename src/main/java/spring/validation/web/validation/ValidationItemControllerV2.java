@@ -48,29 +48,25 @@ public class ValidationItemControllerV2 {
 		return "validation/v2/addForm";
 	}
 
-	// BindingResult 파라메터 선언 유무
-
-	// 선언 X: 컨트롤러가 호출되지 않고 400 응답 코드에 해당하는 에러 메세지
-	// 선언 O: 컨트롤러가 호출되며 에러 정보는 BindingResult에 담긴다.
 	@PostMapping("/add")
 	public String addItem(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
-		// BindingResult는 Model에 자동으로 포함돼서 넘어간다.
 
 		if (!StringUtils.hasText(item.getItemName())) {
-			bindingResult.addError(new FieldError("item", "itemName", "상품 이름은 필수입니다."));
+			// bindingFailure -> 바인딩 자체가 실패한 경우 true, 비즈니스적 문제가 존재하는 경우 false
+			bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null,  "상품 이름은 필수입니다."));
 		}
 		if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
-			bindingResult.addError(new FieldError("item", "price", "가격은 1,000 ~ 1,000,000 까지 허용합니다."));
+			bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, null, null, "가격은 1,000 ~ 1,000,000 까지 허용합니다."));
 		}
 		if (item.getQuantity() == null || item.getQuantity() > 9999) {
-			bindingResult.addError(new FieldError("item", "quantity", "수량은 최대 9,999 까지 허용합니다."));
+			bindingResult.addError(new FieldError("item", "quantity", item.getQuantity(), false, null, null, "수량은 최대 9,999 까지 허용합니다."));
 		}
 
 		// 특정 필드가 아닌 복합 룰 검증
 		if (item.getPrice() != null && item.getQuantity() != null) {
 			int resultPrice = item.getPrice() * item.getQuantity();
 			if (resultPrice < 10000) {
-				bindingResult.addError(new ObjectError("item", "가격 * 수량의 합은 10,000원 이상이어야 합니다. 현재 값 = " + resultPrice));
+				bindingResult.addError(new ObjectError("item", null, null, "가격 * 수량의 합은 10,000원 이상이어야 합니다. 현재 값 = " + resultPrice));
 			}
 		}
 
